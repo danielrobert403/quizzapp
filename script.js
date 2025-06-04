@@ -1,5 +1,5 @@
 
-const questions = [
+const easyQuestions = [
     {
         question: "Where is Dave from?", 
         answers: [
@@ -44,7 +44,38 @@ const questions = [
             { text: "Six Paths", correct: false },
             { text: "We're All Alone In This Together", correct: false },
         ]
+    }
+    ,
+    {
+        question: "Which song by Dave features Fredo and reached number one on the UK Singles Chart?",
+        answers: [
+            { text: "Funky Friday", correct: true },
+            { text: "Location", correct: false },
+            { text: "Black", correct: false },
+            { text: "Streatham", correct: false },
+        ]
     },
+    {
+        question: "What is Dave's full stage name?",
+        answers: [
+            { text: "Santan Dave", correct: true },
+            { text: "Dave Santan", correct: false },
+            { text: "Dave Omoregie", correct: false },
+            { text: "Santan", correct: false },
+        ]
+    },
+    {
+        question: "Which Dave song includes the lyric 'Look, I know killers and I know victims'?",
+        answers: [
+            { text: "Black", correct: false },
+            { text: "Streatham", correct: true },
+            { text: "Disaster", correct: false },
+            { text: "Lesley", correct: false },
+        ]
+    }
+];
+
+const intermediateQuestions = [
     {
         question: "Which song did Dave perform at the 2020 BRIT Awards?",
         answers: [
@@ -70,7 +101,48 @@ const questions = [
             { text: "Burna Boy", correct: true },
             { text: "AJ Tracey", correct: false },
         ]
-    }, {
+    }
+    ,
+    {
+        question: "Which Dave song features a guest verse from Headie One?",
+        answers: [
+            { text: "18Hunna", correct: false },
+            { text: "Both", correct: false },
+            { text: "Streatham", correct: false },
+            { text: "Paper Cuts", correct: true },
+        ]
+    },
+    {
+        question: "What is the name of Dave's 2017 EP?",
+        answers: [
+            { text: "Game Over", correct: true },
+            { text: "Six Paths", correct: false },
+            { text: "Psychodrama", correct: false },
+            { text: "Location", correct: false },
+        ]
+    },
+    {
+        question: "Which Dave song references Theresa May in its lyrics?",
+        answers: [
+            { text: "Question Time", correct: true },
+            { text: "Black", correct: false },
+            { text: "Disaster", correct: false },
+            { text: "Lesley", correct: false },
+        ]
+    },
+    {
+        question: "Dave collaborated with which artist on the track 'Thiago Silva'?",
+        answers: [
+            { text: "AJ Tracey", correct: true },
+            { text: "Stormzy", correct: false },
+            { text: "J Hus", correct: false },
+            { text: "Fredo", correct: false },
+        ]
+    }
+];
+
+const expertQuestions = [
+    {
         question: "What is Santan Dave's Real name", 
         answers: [
             { text: "David omoregie", correct: false},
@@ -98,7 +170,7 @@ const questions = [
         ] 
     },
     { 
-        question: "'Far the Rest But i'm far from my best' is a famous line from which song?", 
+        question: "'Far From the Rest But i'm far from my best' is a famous line from which song?", 
         answers: [
             { text: "Location", correct: true},
             { text: "Lesly", correct: false},
@@ -106,7 +178,43 @@ const questions = [
             { text: "Lazarus", correct: false},
         ] 
     }
-    
+    ,
+    {
+        question: "Which university did Dave briefly attend before focusing on music?",
+        answers: [
+            { text: "University of Oxford", correct: false },
+            { text: "De Montfort University", correct: true },
+            { text: "University of Manchester", correct: false },
+            { text: "King's College London", correct: false },
+        ]
+    },
+    {
+        question: "Dave appeared on which track from Drake's 'More Life' project?",
+        answers: [
+            { text: "Passionfruit", correct: false },
+            { text: "No Long Talk", correct: false },
+            { text: "KMT", correct: true },
+            { text: "Free Smoke", correct: false },
+        ]
+    },
+    {
+        question: "What is the name of Dave's brother who is referenced in his music?",
+        answers: [
+            { text: "Ben", correct: false },
+            { text: "Christopher", correct: false },
+            { text: "Christopher Omoregie", correct: true },
+            { text: "Michael", correct: false },
+        ]
+    },
+    {
+        question: "Which Dave song was produced by Fraser T. Smith and features a 10-minute narrative?",
+        answers: [
+            { text: "Lesley", correct: true },
+            { text: "Black", correct: false },
+            { text: "Funky Friday", correct: false },
+            { text: "Disaster", correct: false },
+        ]
+    }
 ];
 
 const questionElement = document.getElementById("questions");
@@ -115,24 +223,47 @@ const nextButton = document.getElementById("next-btn");
 
 let currentQuestionIndex = 0;
 let score = 0;
+let currentLevel = 0;
+let levels = ['Easy', 'Intermediate', 'Expert'];
+let currentQuestions = [];
 let shuffledQuestions = [];
 
 function startQuiz(){
     currentQuestionIndex = 0;
     score = 0;
-    shuffledQuestions = questions
-        .map(value => ({ value, sort: Math.random() }))
-        .sort((a, b) => a.sort - b.sort)
-        .map(({ value }) => value);
+    currentLevel = 0;
+    loadLevel(currentLevel);
     nextButton.innerHTML = "Next";
     showQuestion();
 }
 
+function loadLevel(level){
+    currentQuestionIndex = 0; // Reset question index when loading new level
+    if(level === 0){
+        currentQuestions = easyQuestions;
+    } else if(level === 1){
+        currentQuestions = intermediateQuestions;
+    } else if(level === 2){
+        currentQuestions = expertQuestions;
+    } else {
+        showFinalScore();
+        return;
+    }
+    shuffledQuestions = currentQuestions
+        .map(value => ({ value, sort: Math.random() }))
+        .sort((a, b) => a.sort - b.sort)
+        .map(({ value }) => value);
+}
+
 function showQuestion(){
     resetState();
+    // Ensure currentLevel is within bounds
+    if(currentLevel < 0 || currentLevel >= levels.length){
+        currentLevel = 0;
+    }
     let currentQuestion = shuffledQuestions[currentQuestionIndex];
     let questionNo = currentQuestionIndex + 1;
-    questionElement.innerHTML = questionNo + ". " + currentQuestion.question;
+    questionElement.innerHTML = `Level: ${levels[currentLevel]} - Q${questionNo}. ${currentQuestion.question}`;
 
     currentQuestion.answers.forEach(answer => {
         const button = document.createElement("button");
@@ -144,10 +275,14 @@ function showQuestion(){
         }
         button.addEventListener("click", selectAnswer);
     });
+    // Disable next button until an answer is selected
+    nextButton.style.display = "none";
+    nextButton.disabled = true;
 }
 
 function resetState(){
     nextButton.style.display = "none";
+    nextButton.disabled = true;
     while(answerButtons.firstChild){
         answerButtons.removeChild(answerButtons.firstChild);
     }
@@ -162,34 +297,62 @@ function selectAnswer(e){
     } else {
         selectedBtn.classList.add("incorrect");
     }
-
-    
-    Array.from(answerButtons.children).forEach(button => {
-        button.disabled = true;
-        if(button.dataset.correct === "true"){
-            button.classList.add("correct");
-        }
-    });
-
+    // Enable next button only after an answer is selected
     nextButton.style.display = "block";
+    nextButton.disabled = false;
 }
+
 
 function showScore(){
     resetState();
-    questionElement.innerHTML = `You scored ${score} out of ${questions.length}!`;
-    nextButton.innerHTML = "Restart";
+    questionElement.innerHTML = `You scored ${score} out of ${currentQuestions.length}!`;
     nextButton.style.display = "block";
-    nextButton.removeEventListener("click", handleNextButton);
-    nextButton.addEventListener("click", () => {
-        startQuiz();
+    // Remove all click listeners by replacing the button
+    let newNextButton = clearNextButtonHandlers();
+    if(currentLevel < levels.length - 1){
+        newNextButton.innerHTML = "Next Level";
+        newNextButton.addEventListener("click", () => {
+            currentLevel++;
+            currentQuestionIndex = 0;
+            loadLevel(currentLevel);
+            newNextButton.innerHTML = "Next";
+            // Reattach handleNextButton for normal question navigation
+            newNextButton.removeEventListener("click", handleNextButton);
+            newNextButton.addEventListener("click", handleNextButton);
+            showQuestion();
+        });
+    } else {
+        // Last level reached, show final score
+        showFinalScore();
+    }
+}
+
+function showFinalScore(){
+    resetState();
+    questionElement.innerHTML = `Quiz completed! Your final score is ${score}.`;
+    nextButton.style.display = "block";
+    // Remove all click listeners by replacing the button
+    let newNextButton = clearNextButtonHandlers();
+    newNextButton.innerHTML = "Restart";
+    newNextButton.addEventListener("click", () => {
+        currentLevel = 0;
+        currentQuestionIndex = 0;
+        score = 0;
+        loadLevel(currentLevel);
+        newNextButton.innerHTML = "Next";
+        // Reattach handleNextButton for normal question navigation
+        newNextButton.removeEventListener("click", handleNextButton);
+        newNextButton.addEventListener("click", handleNextButton);
+        showQuestion();
     });
 }
 
 function handleNextButton(){
     currentQuestionIndex++;
-    if(currentQuestionIndex < questions.length){
+    if(currentQuestionIndex < shuffledQuestions.length){
         showQuestion();
     } else {
+        currentQuestionIndex = 0; // Reset for next level
         showScore();
     }
 }
@@ -197,5 +360,10 @@ function handleNextButton(){
 nextButton.removeEventListener("click", handleNextButton);
 nextButton.addEventListener("click", handleNextButton);
 
-startQuiz();
+function clearNextButtonHandlers(){
+    const newNextButton = nextButton.cloneNode(true);
+    nextButton.parentNode.replaceChild(newNextButton, nextButton);
+    return newNextButton;
+}
 
+startQuiz();
